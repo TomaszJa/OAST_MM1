@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OAST_MM1.Objects;
+using OAST_MM1.Queues;
+using System;
 
 namespace OAST_MM1
 {
@@ -6,7 +8,9 @@ namespace OAST_MM1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var simulation = new StandardMM1Queue();
+
+            simulation.StartSimulation();
         }
     }
 }
