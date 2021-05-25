@@ -22,6 +22,7 @@ namespace OAST_MM1.Queues
         private List<double> timesOfServiceList = new List<double>();
 
         public double estimatedDelay;
+        public int allServedIncidents;
         public double maxDelay;
         public double minDelay;
 
@@ -98,6 +99,7 @@ namespace OAST_MM1.Queues
                     }
                 }
                 calculatedDelay += totalServiceTime / numberOfServedIncidents;       // dodajemy do zmiennej obliczone opóźnienie
+                allServedIncidents += numberOfServedIncidents;
                 var delayValues = CalculateEdgeServiceValues(timesOfServiceList);   
 
                 if (minDelay > delayValues[0])
@@ -111,6 +113,7 @@ namespace OAST_MM1.Queues
             }
 
             estimatedDelay = calculatedDelay / numberOfIterations;          // Wyestymowane opóźnienie na podstawie ilości iteracji
+            allServedIncidents = allServedIncidents / numberOfIterations;   // Ile średnio było obsłużonych pakietów
             var ET = 1 / (MI - LAMBDA);                                     // Obliczone teoretyczne opóźnienie
 
             var path = $"Wyniki_dla_lambda_{LAMBDA}.txt";
@@ -123,6 +126,7 @@ namespace OAST_MM1.Queues
                     sw.WriteLine($"Estimated delay: {estimatedDelay}");
                     sw.WriteLine($"Max delay: {maxDelay}");
                     sw.WriteLine($"Min delay: {minDelay}");
+                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}");
                 }
             }
             else
@@ -134,6 +138,7 @@ namespace OAST_MM1.Queues
                     sw.WriteLine($"Estimated delay: {estimatedDelay}");
                     sw.WriteLine($"Max delay: {maxDelay}");
                     sw.WriteLine($"Min delay: {minDelay}");
+                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}");
                 }
             }
             Console.WriteLine($"ET: {ET}\nx: {estimatedDelay}");
