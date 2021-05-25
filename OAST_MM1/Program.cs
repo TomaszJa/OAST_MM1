@@ -8,9 +8,21 @@ namespace OAST_MM1
     {
         static void Main(string[] args)
         {
-            var simulation = new StandardMM1Queue();
+            double lambda = 0.5;
+            double time = 60000;
 
-            simulation.StartSimulation();
+            Console.WriteLine("Podaj lambdę");
+            lambda = Double.Parse(Console.ReadLine());
+
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine($"Lambda: {lambda}");
+                var simulation = new StandardMM1Queue(lambda, time);
+
+                simulation.StartSimulation(10);
+                lambda += 0.1;
+                lambda = Math.Round(lambda, 1);
+            }
         }
     }
 }

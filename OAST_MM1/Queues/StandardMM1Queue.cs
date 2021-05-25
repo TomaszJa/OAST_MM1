@@ -1,6 +1,7 @@
 ﻿using OAST_MM1.Objects;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace OAST_MM1.Queues
@@ -8,19 +9,27 @@ namespace OAST_MM1.Queues
     public class StandardMM1Queue
     {
         private const int MI = 8;
-        private double LAMBDA = 6;
+        private double LAMBDA = 0.5;
         private double timeBetweenIncidents = 0;
         private double simulationTime = 0;
-        private double maxSimulationTime = 100;
+        private double maxSimulationTime = 50000;
         private double totalServiceTime = 0;
         private int lastIncidentIndex = 0;
         private int numberOfServedIncidents = 0;
 
         private Random random = new Random();
         private IncidentsList incidentsList = new IncidentsList();
-        private List<Incident> incidentsQueue = new List<Incident>();
-        private List<double> timesList = new List<double>();
-        private List<int> numberOfIncidentsInQueue = new List<int>();
+        private List<double> timesOfServiceList = new List<double>();
+
+        public double estimatedDelay;
+        public double maxDelay;
+        public double minDelay;
+
+        public StandardMM1Queue(double _lambda, double _simulationTime)
+        {
+            LAMBDA = _lambda;
+            maxSimulationTime = _simulationTime;
+        }
 
         private double GenerateServiceTime()
         {
@@ -36,54 +45,123 @@ namespace OAST_MM1.Queues
             return arrivalTime;
         }
 
-        public void StartSimulation()
+        public void StartSimulation(int numberOfIterations)
         {
-            // Symulację zaczynamy od dodania pierwszego zdarzenia dla czasu przyjścia równego 0
-            while (simulationTime <= maxSimulationTime)
+            var calculatedDelay = 0.0;
+            var minDelay = Double.MaxValue;
+            var maxDelay = Double.MinValue;
+
+            for (int i = 0; i < numberOfIterations; i++)
             {
-                var newIncident = new Incident()
+                totalServiceTime = 0;
+                simulationTime = 0;
+                numberOfServedIncidents = 0;
+                incidentsList = new IncidentsList();
+                timesOfServiceList = new List<double>();
+                timeBetweenIncidents = 0;
+
+                // Symulację zaczynamy od dodania pierwszego zdarzenia dla czasu przyjścia równego 0
+                while (simulationTime <= maxSimulationTime)
                 {
-                    arrivalTime = timeBetweenIncidents,
-                    //startServiceTime = Math.Max(finishTimeOfLastIncident, timeBetweenIncidents),
-                    serviceTime = GenerateServiceTime(),
-                    nextTime = GenerateArrivalTime(),
-                    incidentType = IncidentType.Arrival
-                };
-
-                incidentsList.PutIncident(newIncident);
-
-                lastIncidentIndex = incidentsList.Incidents.Count - 1;  // zmienna przechowująca indeks ostatniego elementu na liście
-                // Czas przyjścia następnego pakietu to czas przyjścia poprzedniego + losowy czas nextTime (po jakim czasie przyjdzie następny)
-                timeBetweenIncidents += incidentsList.Incidents[lastIncidentIndex].nextTime;
-
-                foreach (var incident in incidentsList.Incidents)
-                {
-                    // Jeżeli czas przyjścia nowego zdarzenia jest mniejszy niż aktualny i to zdarzenie jeszcze nie jest wpisane do kolejki czas symulacji to dodaj to zdarzenie do kolejki
-                    if (incident.arrivalTime < simulationTime && !incidentsQueue.Contains(incident))   
+                    var newIncident = new Incident()
                     {
-                        incidentsQueue.Add(incident);
+                        arrivalTime = timeBetweenIncidents,
+                        serviceTime = GenerateServiceTime(),
+                        nextTime = GenerateArrivalTime(),
+                        incidentType = IncidentType.Arrival
+                    };
+
+                    incidentsList.PutIncident(newIncident);
+
+                    lastIncidentIndex = incidentsList.Incidents.Count - 1;  // zmienna przechowująca indeks ostatniego elementu na liście
+                    
+                    // Czas przyjścia następnego pakietu to czas przyjścia poprzedniego + losowy czas nextTime (po jakim czasie przyjdzie następny)
+                    timeBetweenIncidents += incidentsList.Incidents[lastIncidentIndex].nextTime;
+
+                    if (incidentsList.Incidents[0].arrivalTime <= simulationTime)   // Jeżeli pakiet dociera i aktualny czas symulacji jest większy lub równy to zostaje obsłużony
+                    {
+                        var incidentToServe = incidentsList.GetIncident();          // Pobieramy zdarzenie z listy
+
+                        simulationTime += incidentToServe.serviceTime;              // aktualny czas symulacji
+
+                        if (simulationTime >= 120)                                  // Rozpęd 120 sekund
+                        {
+                            totalServiceTime += simulationTime - incidentToServe.arrivalTime;          // całkowity czas obsługi zdarzeń
+                            numberOfServedIncidents++;
+
+                            timesOfServiceList.Add(simulationTime - incidentToServe.arrivalTime);      // Dodaj aktualny czas do listy czasów
+                        }
+                    }
+                    else
+                    {
+                        simulationTime = incidentsList.Incidents[0].arrivalTime;    // aktualny czas symulacji
                     }
                 }
+                calculatedDelay += totalServiceTime / numberOfServedIncidents;       // dodajemy do zmiennej obliczone opóźnienie
+                var delayValues = CalculateEdgeServiceValues(timesOfServiceList);   
 
-                numberOfIncidentsInQueue.Add(incidentsQueue.Count);     // Lista przechowująca ilość zdarzeń w kolejce dla każdej iteracji
-
-                timesList.Add(simulationTime);      // Dodaj aktualny czas do listy czasów
-
-                if (incidentsList.Incidents[0].arrivalTime <= simulationTime)   // Jeżeli pakiet dociera i aktualny czas symulacji jest większy lub równy to zostaje obsłużony
+                if (minDelay > delayValues[0])
                 {
-                    var incidentToServe = incidentsList.GetIncident();          // Pobieramy zdarzenie z listy
-                    incidentsQueue.Remove(incidentToServe);                     // Usuwamy z kolejki, jeżeli się na niej znajduje
-                    numberOfServedIncidents++;
-
-                    totalServiceTime += incidentToServe.serviceTime;            // całkowity czas obsługi zdarzeń
-
-                    simulationTime += incidentToServe.serviceTime;              // aktualny czas symulacji
+                    minDelay = delayValues[0];
                 }
-                else
+                if (maxDelay < delayValues[1])
                 {
-                    simulationTime = incidentsList.Incidents[0].arrivalTime;    // aktualny czas symulacji
+                    maxDelay = delayValues[1];
                 }
             }
+
+            estimatedDelay = calculatedDelay / numberOfIterations;          // Wyestymowane opóźnienie na podstawie ilości iteracji
+            var ET = 1 / (MI - LAMBDA);                                     // Obliczone teoretyczne opóźnienie
+
+            var path = $"Wyniki_dla_lambda_{LAMBDA}.txt";
+            if (!File.Exists(path))
+            {
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                    sw.WriteLine($"Mi: {MI} || Lambda: {LAMBDA}");
+                    sw.WriteLine($"Teoritical delay: {ET}");
+                    sw.WriteLine($"Estimated delay: {estimatedDelay}");
+                    sw.WriteLine($"Max delay: {maxDelay}");
+                    sw.WriteLine($"Min delay: {minDelay}");
+                }
+            }
+            else
+            {
+                using (StreamWriter sw = File.AppendText(path))
+                {
+                    sw.WriteLine($"Mi: {MI} || Lambda: {LAMBDA}");
+                    sw.WriteLine($"Teoritical delay: {ET}");
+                    sw.WriteLine($"Estimated delay: {estimatedDelay}");
+                    sw.WriteLine($"Max delay: {maxDelay}");
+                    sw.WriteLine($"Min delay: {minDelay}");
+                }
+            }
+            Console.WriteLine($"ET: {ET}\nx: {estimatedDelay}");
+        }
+
+        private double[] CalculateEdgeServiceValues(List<double> timesOfService)
+        {
+            double minDelay = Double.MaxValue;
+            double maxDelay = Double.MinValue;
+
+            foreach (var time in timesOfService)
+            {
+                if (minDelay > time)
+                {
+                    minDelay = time;
+                }
+                if (maxDelay < time)
+                {
+                    maxDelay = time;
+                }
+            }
+
+            double[] results = new double[2];
+
+            results[0] = minDelay;
+            results[1] = maxDelay;
+
+            return results;
         }
     }
 }
