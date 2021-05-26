@@ -61,23 +61,25 @@ namespace OAST_MM1.Queues
                 timesOfServiceList = new List<double>();
                 timeBetweenIncidents = 0;
 
+                var newIncident = new Incident()
+                {
+                    arrivalTime = timeBetweenIncidents,
+                    serviceTime = GenerateServiceTime(),
+                    nextTime = GenerateArrivalTime(),
+                    incidentType = IncidentType.Arrival
+                };
+
+                incidentsList.PutIncident(newIncident);
+
                 // Symulację zaczynamy od dodania pierwszego zdarzenia dla czasu przyjścia równego 0
                 while (simulationTime <= maxSimulationTime)
                 {
-                    var newIncident = new Incident()
-                    {
-                        arrivalTime = timeBetweenIncidents,
-                        serviceTime = GenerateServiceTime(),
-                        nextTime = GenerateArrivalTime(),
-                        incidentType = IncidentType.Arrival
-                    };
-
-                    incidentsList.PutIncident(newIncident);
-
-                    lastIncidentIndex = incidentsList.Incidents.Count - 1;  // zmienna przechowująca indeks ostatniego elementu na liście
                     
-                    // Czas przyjścia następnego pakietu to czas przyjścia poprzedniego + losowy czas nextTime (po jakim czasie przyjdzie następny)
-                    timeBetweenIncidents += incidentsList.Incidents[lastIncidentIndex].nextTime;
+
+                    //lastIncidentIndex = incidentsList.Incidents.Count - 1;  // zmienna przechowująca indeks ostatniego elementu na liście
+
+                    //
+                    //timeBetweenIncidents += incidentsList.Incidents[lastIncidentIndex].nextTime;
 
                     if (incidentsList.Incidents[0].arrivalTime <= simulationTime)   // Jeżeli pakiet dociera i aktualny czas symulacji jest większy lub równy to zostaje obsłużony
                     {
@@ -92,6 +94,19 @@ namespace OAST_MM1.Queues
 
                             timesOfServiceList.Add(simulationTime - incidentToServe.arrivalTime);      // Dodaj aktualny czas do listy czasów
                         }
+
+                        // Czas przyjścia następnego pakietu to czas przyjścia poprzedniego + losowy czas nextTime (po jakim czasie przyjdzie następny)
+                        timeBetweenIncidents += incidentToServe.nextTime;   
+
+                        newIncident = new Incident()
+                        {
+                            arrivalTime = timeBetweenIncidents,
+                            serviceTime = GenerateServiceTime(),
+                            nextTime = GenerateArrivalTime(),
+                            incidentType = IncidentType.Arrival
+                        };
+
+                        incidentsList.PutIncident(newIncident);     // Jako, że obsłużyliśmy zdarzenie to dodajemy kolejne
                     }
                     else
                     {
@@ -100,7 +115,7 @@ namespace OAST_MM1.Queues
                 }
                 calculatedDelay += totalServiceTime / numberOfServedIncidents;       // dodajemy do zmiennej obliczone opóźnienie
                 allServedIncidents += numberOfServedIncidents;
-                var delayValues = CalculateEdgeServiceValues(timesOfServiceList);   
+                var delayValues = CalculateEdgeServiceValues(timesOfServiceList);
 
                 if (minDelay > delayValues[0])
                 {
@@ -116,29 +131,34 @@ namespace OAST_MM1.Queues
             allServedIncidents = allServedIncidents / numberOfIterations;   // Ile średnio było obsłużonych pakietów
             var ET = 1 / (MI - LAMBDA);                                     // Obliczone teoretyczne opóźnienie
 
-            var path = $"Wyniki_dla_lambda_{LAMBDA}.txt";
+            WriteToFile(minDelay, maxDelay, ET, numberOfIterations);
+        }
+
+        private void WriteToFile(double minDelay, double maxDelay, double ET, int numberOfIterations)
+        {
+            var path = $"Wyniki.txt";
             if (!File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path))
                 {
-                    sw.WriteLine($"Mi: {MI} || Lambda: {LAMBDA}");
-                    sw.WriteLine($"Teoritical delay: {ET}");
+                    sw.WriteLine($"Mi: {MI} || Lambda: {LAMBDA} || Simulation Time: {maxSimulationTime} || Number of iterations: {numberOfIterations}");
+                    sw.WriteLine($"Theoritical delay: {ET}");
                     sw.WriteLine($"Estimated delay: {estimatedDelay}");
                     sw.WriteLine($"Max delay: {maxDelay}");
                     sw.WriteLine($"Min delay: {minDelay}");
-                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}");
+                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}\n");
                 }
             }
             else
             {
                 using (StreamWriter sw = File.AppendText(path))
                 {
-                    sw.WriteLine($"Mi: {MI} || Lambda: {LAMBDA}");
-                    sw.WriteLine($"Teoritical delay: {ET}");
+                    sw.WriteLine($"Mi: {MI} || Lambda: {LAMBDA} || Simulation Time: {maxSimulationTime} || Number of iterations: {numberOfIterations}");
+                    sw.WriteLine($"Theoritical delay: {ET}");
                     sw.WriteLine($"Estimated delay: {estimatedDelay}");
                     sw.WriteLine($"Max delay: {maxDelay}");
                     sw.WriteLine($"Min delay: {minDelay}");
-                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}");
+                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}\n");
                 }
             }
             Console.WriteLine($"ET: {ET}\nx: {estimatedDelay}");
