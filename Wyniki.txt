@@ -1,0 +1,392 @@
+Mi: 8 || Lambda: 0,5 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,13333333333333333
+Estimated delay: 0,13332656955186864
+Max delay: 2,1905104231555015
+Min delay: 4,656612873077393E-10
+Estimated number of packets served: 172741
+
+Mi: 8 || Lambda: 0,6 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,13513513513513511
+Estimated delay: 0,13512101505877147
+Max delay: 2,852970141975675
+Min delay: 2,3283064365386963E-10
+Estimated number of packets served: 207266
+
+Mi: 8 || Lambda: 0,7 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,136986301369863
+Estimated delay: 0,13697623193748013
+Max delay: 2,59930192711181
+Min delay: 5,820766091346741E-10
+Estimated number of packets served: 241818
+
+Mi: 8 || Lambda: 0,8 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,1388888888888889
+Estimated delay: 0,13886335523539967
+Max delay: 2,7812565396598075
+Min delay: 2,153683453798294E-09
+Estimated number of packets served: 276386
+
+Mi: 8 || Lambda: 0,9 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,14084507042253522
+Estimated delay: 0,14083190065153187
+Max delay: 2,7721294047078118
+Min delay: 2,5029294192790985E-09
+Estimated number of packets served: 310938
+
+Mi: 8 || Lambda: 1 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,14285714285714285
+Estimated delay: 0,14285574073872526
+Max delay: 2,621640738667338
+Min delay: 2,3283064365386963E-10
+Estimated number of packets served: 345508
+
+Mi: 8 || Lambda: 1,1 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,14492753623188406
+Estimated delay: 0,14493266561264598
+Max delay: 2,7953567674558144
+Min delay: 8,149072527885437E-10
+Estimated number of packets served: 380021
+
+Mi: 8 || Lambda: 1,2 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,14705882352941177
+Estimated delay: 0,14708370656146016
+Max delay: 2,7811813434091164
+Min delay: 5,820766091346741E-10
+Estimated number of packets served: 414550
+
+Mi: 8 || Lambda: 1,3 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,14925373134328357
+Estimated delay: 0,14924278504505148
+Max delay: 2,8338791343267076
+Min delay: 2,9103830456733704E-10
+Estimated number of packets served: 449121
+
+Mi: 8 || Lambda: 1,4 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,15151515151515152
+Estimated delay: 0,1515139703569182
+Max delay: 2,899890057364246
+Min delay: 8,731149137020111E-10
+Estimated number of packets served: 483666
+
+Mi: 8 || Lambda: 1,5 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,15384615384615385
+Estimated delay: 0,1538383116006367
+Max delay: 2,8943051384412684
+Min delay: 5,820766091346741E-10
+Estimated number of packets served: 518231
+
+Mi: 8 || Lambda: 1,6 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,15625
+Estimated delay: 0,15626284866706894
+Max delay: 3,0473473857564386
+Min delay: 0
+Estimated number of packets served: 552741
+
+Mi: 8 || Lambda: 1,7 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,15873015873015872
+Estimated delay: 0,15871090882673994
+Max delay: 2,9828677023760974
+Min delay: 5,238689482212067E-10
+Estimated number of packets served: 587296
+
+Mi: 8 || Lambda: 1,8 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,16129032258064516
+Estimated delay: 0,16128956260114136
+Max delay: 2,7771914792247117
+Min delay: 9,313225746154785E-10
+Estimated number of packets served: 621883
+
+Mi: 8 || Lambda: 1,9 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,1639344262295082
+Estimated delay: 0,16395492772471632
+Max delay: 3,126310803971137
+Min delay: 2,3283064365386963E-10
+Estimated number of packets served: 656426
+
+Mi: 8 || Lambda: 2 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,16666666666666666
+Estimated delay: 0,16668107201594914
+Max delay: 3,302524060563883
+Min delay: 1,1641532182693481E-10
+Estimated number of packets served: 690982
+
+Mi: 8 || Lambda: 2,1 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,1694915254237288
+Estimated delay: 0,16952658834082887
+Max delay: 3,1901660945732147
+Min delay: 1,1641532182693481E-10
+Estimated number of packets served: 725561
+
+Mi: 8 || Lambda: 2,2 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,1724137931034483
+Estimated delay: 0,1724219488362619
+Max delay: 3,027224475874391
+Min delay: 6,984919309616089E-10
+Estimated number of packets served: 760072
+
+Mi: 8 || Lambda: 2,3 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,17543859649122806
+Estimated delay: 0,17545408828537126
+Max delay: 3,329796266712947
+Min delay: 1,3969838619232178E-09
+Estimated number of packets served: 794581
+
+Mi: 8 || Lambda: 2,4 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,17857142857142858
+Estimated delay: 0,17854024256520237
+Max delay: 3,419550695223734
+Min delay: 5,820766091346741E-11
+Estimated number of packets served: 829160
+
+Mi: 8 || Lambda: 2,5 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,18181818181818182
+Estimated delay: 0,18180789712245993
+Max delay: 3,651709440309787
+Min delay: 4,0745362639427185E-10
+Estimated number of packets served: 863786
+
+Mi: 8 || Lambda: 2,6 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,18518518518518517
+Estimated delay: 0,18517650036942476
+Max delay: 3,6387959546409547
+Min delay: 1,5133991837501526E-09
+Estimated number of packets served: 898117
+
+Mi: 8 || Lambda: 2,7 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,18867924528301888
+Estimated delay: 0,188676220996017
+Max delay: 3,497792564041447
+Min delay: 1,7462298274040222E-10
+Estimated number of packets served: 932695
+
+Mi: 8 || Lambda: 2,8 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,1923076923076923
+Estimated delay: 0,192341558151726
+Max delay: 3,6734445898619015
+Min delay: 1,1641532182693481E-10
+Estimated number of packets served: 967390
+
+Mi: 8 || Lambda: 2,9 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,19607843137254904
+Estimated delay: 0,19605438276348355
+Max delay: 3,936822167073842
+Min delay: 2,9103830456733704E-10
+Estimated number of packets served: 1001833
+
+Mi: 8 || Lambda: 3 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,2
+Estimated delay: 0,20001202076781113
+Max delay: 4,4833500740351155
+Min delay: 2,9103830456733704E-10
+Estimated number of packets served: 1036467
+
+Mi: 8 || Lambda: 3,1 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,2040816326530612
+Estimated delay: 0,20409029224499042
+Max delay: 4,069224438688252
+Min delay: 5,820766091346741E-11
+Estimated number of packets served: 1070972
+
+Mi: 8 || Lambda: 3,2 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,20833333333333334
+Estimated delay: 0,20836769377929673
+Max delay: 4,111698639404494
+Min delay: 0
+Estimated number of packets served: 1105549
+
+Mi: 8 || Lambda: 3,3 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,2127659574468085
+Estimated delay: 0,21277284542417213
+Max delay: 4,3583854427415645
+Min delay: 2,6193447411060333E-09
+Estimated number of packets served: 1139988
+
+Mi: 8 || Lambda: 3,4 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,2173913043478261
+Estimated delay: 0,21742296903658012
+Max delay: 4,473693156760419
+Min delay: 1,7462298274040222E-10
+Estimated number of packets served: 1174762
+
+Mi: 8 || Lambda: 3,5 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,2222222222222222
+Estimated delay: 0,22218636330243666
+Max delay: 3,891568372346228
+Min delay: 5,820766091346741E-11
+Estimated number of packets served: 1209174
+
+Mi: 8 || Lambda: 3,6 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,22727272727272727
+Estimated delay: 0,22720359379185034
+Max delay: 4,537631965795299
+Min delay: 1,4551915228366852E-09
+Estimated number of packets served: 1243733
+
+Mi: 8 || Lambda: 3,7 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,23255813953488372
+Estimated delay: 0,23257158438942682
+Max delay: 4,051668232132215
+Min delay: 1,1641532182693481E-09
+Estimated number of packets served: 1278358
+
+Mi: 8 || Lambda: 3,8 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,23809523809523808
+Estimated delay: 0,238034158321135
+Max delay: 4,2310281305835815
+Min delay: 2,3283064365386963E-10
+Estimated number of packets served: 1312718
+
+Mi: 8 || Lambda: 3,9 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,24390243902439027
+Estimated delay: 0,24385133663417402
+Max delay: 4,736613888730062
+Min delay: 5,820766091346741E-10
+Estimated number of packets served: 1347283
+
+Mi: 8 || Lambda: 4 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,25
+Estimated delay: 0,24999832933334853
+Max delay: 4,8607040657661855
+Min delay: 3,4924596548080444E-10
+Estimated number of packets served: 1381998
+
+Mi: 8 || Lambda: 4,1 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,2564102564102564
+Estimated delay: 0,2563459625193232
+Max delay: 5,272534889438248
+Min delay: 4,656612873077393E-10
+Estimated number of packets served: 1416464
+
+Mi: 8 || Lambda: 4,2 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,2631578947368421
+Estimated delay: 0,26304448712610984
+Max delay: 4,759052499844984
+Min delay: 2,9103830456733704E-10
+Estimated number of packets served: 1450998
+
+Mi: 8 || Lambda: 4,3 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,27027027027027023
+Estimated delay: 0,2701705330666555
+Max delay: 4,837230007440667
+Min delay: 1,1059455573558807E-09
+Estimated number of packets served: 1485623
+
+Mi: 8 || Lambda: 4,4 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,2777777777777778
+Estimated delay: 0,27760782683305535
+Max delay: 5,420262918167282
+Min delay: 2,9103830456733704E-10
+Estimated number of packets served: 1520090
+
+Mi: 8 || Lambda: 4,5 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,2857142857142857
+Estimated delay: 0,28558544331727875
+Max delay: 4,952277614240302
+Min delay: 2,3283064365386963E-10
+Estimated number of packets served: 1554622
+
+Mi: 8 || Lambda: 4,6 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,2941176470588235
+Estimated delay: 0,29387820412917526
+Max delay: 5,387759774195729
+Min delay: 9,313225746154785E-10
+Estimated number of packets served: 1589162
+
+Mi: 8 || Lambda: 4,7 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,30303030303030304
+Estimated delay: 0,30289452400900146
+Max delay: 5,091865696245804
+Min delay: 1,7462298274040222E-10
+Estimated number of packets served: 1623745
+
+Mi: 8 || Lambda: 4,8 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,3125
+Estimated delay: 0,312210805503157
+Max delay: 5,160853888839483
+Min delay: 0
+Estimated number of packets served: 1658274
+
+Mi: 8 || Lambda: 4,9 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,32258064516129037
+Estimated delay: 0,32234066225698016
+Max delay: 5,594277087773662
+Min delay: 2,3283064365386963E-10
+Estimated number of packets served: 1692823
+
+Mi: 8 || Lambda: 5 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,3333333333333333
+Estimated delay: 0,33306896144836867
+Max delay: 5,6363563966879155
+Min delay: 4,656612873077393E-10
+Estimated number of packets served: 1727427
+
+Mi: 8 || Lambda: 5,1 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,3448275862068965
+Estimated delay: 0,3445158677057967
+Max delay: 5,920804775174474
+Min delay: 5,238689482212067E-10
+Estimated number of packets served: 1761948
+
+Mi: 8 || Lambda: 5,2 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,35714285714285715
+Estimated delay: 0,356800311488491
+Max delay: 5,743302965653129
+Min delay: 0
+Estimated number of packets served: 1796474
+
+Mi: 8 || Lambda: 5,3 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,37037037037037035
+Estimated delay: 0,37002851292878
+Max delay: 6,710344146878924
+Min delay: 6,984919309616089E-10
+Estimated number of packets served: 1830958
+
+Mi: 8 || Lambda: 5,4 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,3846153846153847
+Estimated delay: 0,3842383885751658
+Max delay: 6,976492167512333
+Min delay: 2,9103830456733704E-10
+Estimated number of packets served: 1865456
+
+Mi: 8 || Lambda: 5,5 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,4
+Estimated delay: 0,39970688770574353
+Max delay: 6,91368916167994
+Min delay: 2,3283064365386963E-10
+Estimated number of packets served: 1900185
+
+Mi: 8 || Lambda: 5,6 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,41666666666666663
+Estimated delay: 0,4163053446431423
+Max delay: 8,005126883363118
+Min delay: 2,3283064365386963E-10
+Estimated number of packets served: 1934567
+
+Mi: 8 || Lambda: 5,7 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,4347826086956522
+Estimated delay: 0,43435698851763344
+Max delay: 8,262737967190333
+Min delay: 2,3283064365386963E-10
+Estimated number of packets served: 1969360
+
+Mi: 8 || Lambda: 5,8 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,45454545454545453
+Estimated delay: 0,4542329181378081
+Max delay: 10,654702001076657
+Min delay: 1,1641532182693481E-10
+Estimated number of packets served: 2003789
+
+Mi: 8 || Lambda: 5,9 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,4761904761904763
+Estimated delay: 0,47570743931921017
+Max delay: 8,018336686072871
+Min delay: 4,0745362639427185E-10
+Estimated number of packets served: 2038337
+
+Mi: 8 || Lambda: 6 || Simulation Time: 345600 || Number of iterations: 400
+Theoritical delay: 0,5
+Estimated delay: 0,4995095757280604
+Max delay: 7,985394704926875
+Min delay: 0
+Estimated number of packets served: 2072834
+
