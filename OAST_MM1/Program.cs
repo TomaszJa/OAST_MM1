@@ -1,5 +1,4 @@
-﻿using OAST_MM1.Objects;
-using OAST_MM1.Queues;
+﻿using OAST_MM1.Queues;
 using System;
 
 namespace OAST_MM1
@@ -10,7 +9,7 @@ namespace OAST_MM1
         {
             double lambda = 0.5;
             double time = 1000;
-            
+
             Console.WriteLine("Podaj lambdę początkową");
             lambda = Double.Parse(Console.ReadLine());
 
@@ -24,7 +23,7 @@ namespace OAST_MM1
             int iterations = int.Parse(Console.ReadLine());
 
             while (lambda <= maxLambda)
-            { 
+            {
                 Console.WriteLine($"Lambda: {lambda}");
                 var simulation = new StandardMM1Queue(lambda, time);
 

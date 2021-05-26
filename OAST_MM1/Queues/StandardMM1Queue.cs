@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace OAST_MM1.Queues
 {
@@ -14,7 +13,6 @@ namespace OAST_MM1.Queues
         private double simulationTime = 0;
         private double maxSimulationTime = 50000;
         private double totalServiceTime = 0;
-        private int lastIncidentIndex = 0;
         private int numberOfServedIncidents = 0;
 
         private Random random = new Random();
@@ -74,13 +72,6 @@ namespace OAST_MM1.Queues
                 // Symulację zaczynamy od dodania pierwszego zdarzenia dla czasu przyjścia równego 0
                 while (simulationTime <= maxSimulationTime)
                 {
-                    
-
-                    //lastIncidentIndex = incidentsList.Incidents.Count - 1;  // zmienna przechowująca indeks ostatniego elementu na liście
-
-                    //
-                    //timeBetweenIncidents += incidentsList.Incidents[lastIncidentIndex].nextTime;
-
                     if (incidentsList.Incidents[0].arrivalTime <= simulationTime)   // Jeżeli pakiet dociera i aktualny czas symulacji jest większy lub równy to zostaje obsłużony
                     {
                         var incidentToServe = incidentsList.GetIncident();          // Pobieramy zdarzenie z listy
@@ -96,7 +87,7 @@ namespace OAST_MM1.Queues
                         }
 
                         // Czas przyjścia następnego pakietu to czas przyjścia poprzedniego + losowy czas nextTime (po jakim czasie przyjdzie następny)
-                        timeBetweenIncidents += incidentToServe.nextTime;   
+                        timeBetweenIncidents += incidentToServe.nextTime;
 
                         newIncident = new Incident()
                         {

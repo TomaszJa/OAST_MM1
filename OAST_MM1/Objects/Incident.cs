@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OAST_MM1.Objects
+﻿namespace OAST_MM1.Objects
 {
     public class Incident
     {
