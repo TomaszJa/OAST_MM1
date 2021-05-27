@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace OAST_MM1.Queues
 {
@@ -18,11 +19,15 @@ namespace OAST_MM1.Queues
         private Random random = new Random();
         private IncidentsList incidentsList = new IncidentsList();
         private List<double> timesOfServiceList = new List<double>();
+        private List<double> delaysList = new List<double>();
 
         public double estimatedDelay;
         public int allServedIncidents;
         public double maxDelay;
         public double minDelay;
+        public double confidence;
+        public double deviation;
+        public string delayValues;
 
         public StandardMM1Queue(double _lambda, double _simulationTime)
         {
@@ -46,12 +51,17 @@ namespace OAST_MM1.Queues
 
         public void StartSimulation(int numberOfIterations)
         {
+            var allCalculatedDelays = 0.0;
             var calculatedDelay = 0.0;
             var minDelay = Double.MaxValue;
             var maxDelay = Double.MinValue;
 
+            var completed = numberOfIterations / 40;
+            var step = completed;
+
             for (int i = 0; i < numberOfIterations; i++)
             {
+                step = ProgressBar(numberOfIterations, completed, i, step);
                 totalServiceTime = 0;
                 simulationTime = 0;
                 numberOfServedIncidents = 0;
@@ -80,10 +90,20 @@ namespace OAST_MM1.Queues
 
                         if (simulationTime >= 120)                                  // Rozpęd 120 sekund
                         {
-                            totalServiceTime += simulationTime - incidentToServe.arrivalTime;          // całkowity czas obsługi zdarzeń
+                            var serviceTime = simulationTime - incidentToServe.arrivalTime;
+                            totalServiceTime += serviceTime;                        // całkowity czas obsługi zdarzeń
                             numberOfServedIncidents++;
 
-                            timesOfServiceList.Add(simulationTime - incidentToServe.arrivalTime);      // Dodaj aktualny czas do listy czasów
+                            timesOfServiceList.Add(serviceTime);      // Dodaj aktualny czas do listy czasów
+
+                            if (minDelay > serviceTime)
+                            {
+                                minDelay = serviceTime;
+                            }
+                            if (maxDelay < serviceTime)
+                            {
+                                maxDelay = serviceTime;
+                            }
                         }
 
                         // Czas przyjścia następnego pakietu to czas przyjścia poprzedniego + losowy czas nextTime (po jakim czasie przyjdzie następny)
@@ -104,30 +124,109 @@ namespace OAST_MM1.Queues
                         simulationTime = incidentsList.Incidents[0].arrivalTime;    // aktualny czas symulacji
                     }
                 }
-                calculatedDelay += totalServiceTime / numberOfServedIncidents;       // dodajemy do zmiennej obliczone opóźnienie
+                calculatedDelay = totalServiceTime / numberOfServedIncidents;
+                allCalculatedDelays += calculatedDelay;                            // dodajemy do zmiennej obliczone opóźnienie
                 allServedIncidents += numberOfServedIncidents;
-                var delayValues = CalculateEdgeServiceValues(timesOfServiceList);
 
-                if (minDelay > delayValues[0])
-                {
-                    minDelay = delayValues[0];
-                }
-                if (maxDelay < delayValues[1])
-                {
-                    maxDelay = delayValues[1];
-                }
+                delaysList.Add(calculatedDelay);             // Lista z opóźnieniami do liczenia przedziałów ufności
             }
 
-            estimatedDelay = calculatedDelay / numberOfIterations;          // Wyestymowane opóźnienie na podstawie ilości iteracji
+            estimatedDelay = allCalculatedDelays / numberOfIterations;          // Wyestymowane opóźnienie na podstawie ilości iteracji
             allServedIncidents = allServedIncidents / numberOfIterations;   // Ile średnio było obsłużonych pakietów
             var ET = 1 / (MI - LAMBDA);                                     // Obliczone teoretyczne opóźnienie
 
+            ConfidenceInterval(estimatedDelay, numberOfIterations);
+            NormalDistribution();
             WriteToFile(minDelay, maxDelay, ET, numberOfIterations);
+        }
+
+        private int ProgressBar(int numberOfIterations, int completed, int i, int x)
+        {
+            var progressBar = x / completed;
+            if (i == 0)
+            {
+                Console.Clear();
+                Console.WriteLine($"Lambda: {LAMBDA}, Number of iterations: {numberOfIterations}, Czas symulacji: {maxSimulationTime}");
+                Console.Write("Progress: [");
+                for (int a = 0; a < 39; a++)
+                {
+                    Console.Write(" ");
+                }
+                Console.Write("]");
+            }
+            if (i == x)
+            {
+                Console.Clear();
+                Console.WriteLine($"Lambda: {LAMBDA}, Number of iterations: {numberOfIterations}, Czas symulacji: {maxSimulationTime}");
+                Console.Write("Progress: [");
+                for (int a = 0; a < progressBar; a++)
+                {
+                    Console.Write("|");
+                }
+                for (int a = 0; a < 39 - progressBar; a++)
+                {
+                    Console.Write(" ");
+                }
+                double percentage = (double)progressBar / 40;
+                Console.Write($"] {percentage*100}%\n");
+                x += completed;
+            }
+            return x;
+        }
+
+        // Funkcja do liczenia przedziału ufności
+        private void ConfidenceInterval(double averageDelay, int numberOfIterations)
+        {
+            delayValues = "";
+            var sumOfDelaysDifferences = 0.0;
+            var u = 1.96;
+
+            foreach (var delay in delaysList)
+            {
+                var x = Math.Pow(delay - averageDelay,2);
+                sumOfDelaysDifferences += x;
+            }
+
+            var y = sumOfDelaysDifferences / numberOfIterations;        // Odchylenie standardowe z próby przed pierwiastkiem
+            deviation = Math.Sqrt(y);                                   // Odchylenie standardowe z próby
+
+            confidence = (u * deviation) / Math.Sqrt(numberOfIterations);
+        }
+
+        // Funkcja do liczenia przedziałów do rozkładu normalnego.
+        private void NormalDistribution()
+        {
+            delaysList.Sort();
+
+            var numberOfValues = delaysList.Count;
+            var maxValue = delaysList[numberOfValues - 1];
+            var minValue = delaysList[0];
+
+            var difference = maxValue - minValue;
+            var step = difference / 20;
+
+            var currentValue = minValue + step;
+            var previousValue = minValue;
+
+            // ilość argumentów x na wykresie to 20, bo tak sobie przyjąłęm
+            var numberOfValuesPerIteration = numberOfValues / 20;
+
+            for (int i = 0; i < 20; i++)
+            {
+                var range = delaysList.Where(x => x <= currentValue && x >= minValue).ToList();
+                var sum = range.Count;
+
+                delayValues += $"{currentValue}\t{sum}\n";
+
+                minValue += step;
+                currentValue += step;
+            }
         }
 
         private void WriteToFile(double minDelay, double maxDelay, double ET, int numberOfIterations)
         {
             var path = $"Wyniki.txt";
+            var path2 = $"Delays.txt";
             if (!File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path))
@@ -135,6 +234,8 @@ namespace OAST_MM1.Queues
                     sw.WriteLine($"Mi: {MI} || Lambda: {LAMBDA} || Simulation Time: {maxSimulationTime} || Number of iterations: {numberOfIterations}");
                     sw.WriteLine($"Theoritical delay: {ET}");
                     sw.WriteLine($"Estimated delay: {estimatedDelay}");
+                    sw.WriteLine($"Confidence: +/-{confidence}");
+                    sw.WriteLine($"Deviation: {deviation}");
                     sw.WriteLine($"Max delay: {maxDelay}");
                     sw.WriteLine($"Min delay: {minDelay}");
                     sw.WriteLine($"Estimated number of packets served: {allServedIncidents}\n");
@@ -147,37 +248,18 @@ namespace OAST_MM1.Queues
                     sw.WriteLine($"Mi: {MI} || Lambda: {LAMBDA} || Simulation Time: {maxSimulationTime} || Number of iterations: {numberOfIterations}");
                     sw.WriteLine($"Theoritical delay: {ET}");
                     sw.WriteLine($"Estimated delay: {estimatedDelay}");
+                    sw.WriteLine($"Confidence: +/-{confidence}");
+                    sw.WriteLine($"Deviation: {deviation}");
                     sw.WriteLine($"Max delay: {maxDelay}");
                     sw.WriteLine($"Min delay: {minDelay}");
                     sw.WriteLine($"Estimated number of packets served: {allServedIncidents}\n");
                 }
             }
-            Console.WriteLine($"ET: {ET}\nx: {estimatedDelay}");
-        }
-
-        private double[] CalculateEdgeServiceValues(List<double> timesOfService)
-        {
-            double minDelay = Double.MaxValue;
-            double maxDelay = Double.MinValue;
-
-            foreach (var time in timesOfService)
+            using (StreamWriter sw = File.CreateText(path2))
             {
-                if (minDelay > time)
-                {
-                    minDelay = time;
-                }
-                if (maxDelay < time)
-                {
-                    maxDelay = time;
-                }
+                sw.WriteLine($"{delayValues}");
             }
-
-            double[] results = new double[2];
-
-            results[0] = minDelay;
-            results[1] = maxDelay;
-
-            return results;
+            Console.WriteLine($"ET: {ET}\nx: {estimatedDelay}");
         }
     }
 }
