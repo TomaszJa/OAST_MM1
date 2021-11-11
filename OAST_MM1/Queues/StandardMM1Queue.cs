@@ -1,6 +1,7 @@
 ﻿using OAST_MM1.Objects;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -8,13 +9,15 @@ namespace OAST_MM1.Queues
 {
     public class StandardMM1Queue
     {
-        private const int MI = 8;
+        private double MI = 8;
         private double LAMBDA = 0.5;
         private double timeBetweenIncidents = 0;
         private double simulationTime = 0;
         private double maxSimulationTime = 50000;
         private double totalServiceTime = 0;
         private int numberOfServedIncidents = 0;
+        private string path = $"Wyniki2.txt";
+        private string path2 = $"Delays.txt";
 
         private Random random = new Random();
         private IncidentsList incidentsList = new IncidentsList();
@@ -33,6 +36,13 @@ namespace OAST_MM1.Queues
         {
             LAMBDA = _lambda;
             maxSimulationTime = _simulationTime;
+        }
+
+        public StandardMM1Queue(double _lambda, double _simulationTime, double _mi)
+        {
+            LAMBDA = _lambda;
+            maxSimulationTime = _simulationTime;
+            MI = _mi;
         }
 
         private double GenerateServiceTime()
@@ -55,8 +65,9 @@ namespace OAST_MM1.Queues
             double calculatedDelay = 0.0;
             double minDelay = Double.MaxValue;
             double maxDelay = Double.MinValue;
+            double allCalculatedIdleMoments = 0.0;
 
-            int completed = numberOfIterations / 40;
+            int completed = (int)Math.Floor((double)(numberOfIterations / 40));
             int step = completed;
 
             for (int i = 0; i < numberOfIterations; i++)
@@ -90,7 +101,7 @@ namespace OAST_MM1.Queues
 
                         if (simulationTime >= 120)                                  // Rozpęd 120 sekund
                         {
-                            var serviceTime = simulationTime - incidentToServe.arrivalTime;
+                            double serviceTime = simulationTime - incidentToServe.arrivalTime;
                             totalServiceTime += serviceTime;                        // całkowity czas obsługi zdarzeń
                             numberOfServedIncidents++;
 
@@ -125,8 +136,10 @@ namespace OAST_MM1.Queues
                     }
                 }
                 calculatedDelay = totalServiceTime / numberOfServedIncidents;
+                double totalIdleTime = maxSimulationTime - totalServiceTime;
                 allCalculatedDelays += calculatedDelay;                            // dodajemy do zmiennej obliczone opóźnienie
                 allServedIncidents += numberOfServedIncidents;
+                allCalculatedIdleMoments += totalIdleTime;
 
                 delaysList.Add(calculatedDelay);             // Lista z opóźnieniami do liczenia przedziałów ufności
             }
@@ -135,10 +148,11 @@ namespace OAST_MM1.Queues
             estimatedDelay = allCalculatedDelays / numberOfIterations;          // Wyestymowane opóźnienie na podstawie ilości iteracji
             allServedIncidents = allServedIncidents / numberOfIterations;   // Ile średnio było obsłużonych pakietów
             double ET = 1 / (MI - LAMBDA);                                     // Obliczone teoretyczne opóźnienie
+            double estimatedIdle = allCalculatedIdleMoments / numberOfIterations;
 
             ConfidenceInterval(estimatedDelay, numberOfIterations);
             NormalDistribution();
-            WriteToFile(minDelay, maxDelay, ET, numberOfIterations);
+            WriteToFile(minDelay, maxDelay, ET, numberOfIterations, estimatedIdle);
         }
 
         private int ProgressBar(int numberOfIterations, int completed, int i, int x)
@@ -224,10 +238,8 @@ namespace OAST_MM1.Queues
             }
         }
 
-        private void WriteToFile(double minDelay, double maxDelay, double ET, int numberOfIterations)
+        private void WriteToFile(double minDelay, double maxDelay, double ET, int numberOfIterations, double estimatedIdle)
         {
-            string path = $"Wyniki.txt";
-            string path2 = $"Delays.txt";
             if (!File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path))
@@ -239,7 +251,8 @@ namespace OAST_MM1.Queues
                     sw.WriteLine($"Deviation: {deviation}");
                     sw.WriteLine($"Max delay: {maxDelay}");
                     sw.WriteLine($"Min delay: {minDelay}");
-                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}\n");
+                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}");
+                    sw.WriteLine($"Estimated IdleTime: {estimatedIdle}\n");
                 }
             }
             else
@@ -253,7 +266,8 @@ namespace OAST_MM1.Queues
                     sw.WriteLine($"Deviation: {deviation}");
                     sw.WriteLine($"Max delay: {maxDelay}");
                     sw.WriteLine($"Min delay: {minDelay}");
-                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}\n");
+                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}");
+                    sw.WriteLine($"Estimated IdleTime: {estimatedIdle}\n");
                 }
             }
             using (StreamWriter sw = File.CreateText(path2))
@@ -262,5 +276,6 @@ namespace OAST_MM1.Queues
             }
             Console.WriteLine($"ET: {ET}\nx: {estimatedDelay}");
         }
+
     }
 }
