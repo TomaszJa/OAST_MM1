@@ -130,6 +130,7 @@ namespace OAST_MM1.Queues
 
                 delaysList.Add(calculatedDelay);             // Lista z opóźnieniami do liczenia przedziałów ufności
             }
+            ProgressBar(numberOfIterations, completed, numberOfIterations, step);
 
             estimatedDelay = allCalculatedDelays / numberOfIterations;          // Wyestymowane opóźnienie na podstawie ilości iteracji
             allServedIncidents = allServedIncidents / numberOfIterations;   // Ile średnio było obsłużonych pakietów
@@ -148,7 +149,7 @@ namespace OAST_MM1.Queues
                 Console.Clear();
                 Console.WriteLine($"Lambda: {LAMBDA}, Number of iterations: {numberOfIterations}, Czas symulacji: {maxSimulationTime}");
                 Console.Write("Progress: [");
-                for (int a = 0; a < 39; a++)
+                for (int a = 0; a < 40; a++)
                 {
                     Console.Write(" ");
                 }
@@ -156,19 +157,19 @@ namespace OAST_MM1.Queues
             }
             if (i == x)
             {
-                Console.Clear();
+                Console.SetCursorPosition(0, 0);
                 Console.WriteLine($"Lambda: {LAMBDA}, Number of iterations: {numberOfIterations}, Czas symulacji: {maxSimulationTime}");
                 Console.Write("Progress: [");
                 for (int a = 0; a < progressBar; a++)
                 {
                     Console.Write("|");
                 }
-                for (int a = 0; a < 39 - progressBar; a++)
+                for (int a = 0; a < 40 - progressBar; a++)
                 {
                     Console.Write(" ");
                 }
                 double percentage = (double)progressBar / 40;
-                Console.Write($"] {percentage*100}%\n");
+                Console.Write($"] {Math.Truncate(percentage*100)}%\n");
                 x += completed;
             }
             return x;
