@@ -37,27 +37,27 @@ namespace OAST_MM1.Queues
 
         private double GenerateServiceTime()
         {
-            var u = random.NextDouble();
-            var serviceTime = -Math.Log(1 - u) / MI;
+            double u = random.NextDouble();
+            double serviceTime = -Math.Log(1 - u) / MI;
             return serviceTime;
         }
 
         private double GenerateArrivalTime()
         {
-            var u = random.NextDouble();
-            var arrivalTime = -Math.Log(1 - u) / LAMBDA;
+            double u = random.NextDouble();
+            double arrivalTime = -Math.Log(1 - u) / LAMBDA;
             return arrivalTime;
         }
 
         public void StartSimulation(int numberOfIterations)
         {
-            var allCalculatedDelays = 0.0;
-            var calculatedDelay = 0.0;
-            var minDelay = Double.MaxValue;
-            var maxDelay = Double.MinValue;
+            double allCalculatedDelays = 0.0;
+            double calculatedDelay = 0.0;
+            double minDelay = Double.MaxValue;
+            double maxDelay = Double.MinValue;
 
-            var completed = numberOfIterations / 40;
-            var step = completed;
+            int completed = numberOfIterations / 40;
+            int step = completed;
 
             for (int i = 0; i < numberOfIterations; i++)
             {
@@ -133,7 +133,7 @@ namespace OAST_MM1.Queues
 
             estimatedDelay = allCalculatedDelays / numberOfIterations;          // Wyestymowane opóźnienie na podstawie ilości iteracji
             allServedIncidents = allServedIncidents / numberOfIterations;   // Ile średnio było obsłużonych pakietów
-            var ET = 1 / (MI - LAMBDA);                                     // Obliczone teoretyczne opóźnienie
+            double ET = 1 / (MI - LAMBDA);                                     // Obliczone teoretyczne opóźnienie
 
             ConfidenceInterval(estimatedDelay, numberOfIterations);
             NormalDistribution();
@@ -142,7 +142,7 @@ namespace OAST_MM1.Queues
 
         private int ProgressBar(int numberOfIterations, int completed, int i, int x)
         {
-            var progressBar = x / completed;
+            int progressBar = x / completed;
             if (i == 0)
             {
                 Console.Clear();
@@ -178,16 +178,16 @@ namespace OAST_MM1.Queues
         private void ConfidenceInterval(double averageDelay, int numberOfIterations)
         {
             delayValues = "";
-            var sumOfDelaysDifferences = 0.0;
-            var u = 1.96;
+            double sumOfDelaysDifferences = 0.0;
+            double u = 1.96;
 
             foreach (var delay in delaysList)
             {
-                var x = Math.Pow(delay - averageDelay,2);
+                double x = Math.Pow(delay - averageDelay,2);
                 sumOfDelaysDifferences += x;
             }
 
-            var y = sumOfDelaysDifferences / numberOfIterations;        // Odchylenie standardowe z próby przed pierwiastkiem
+            double y = sumOfDelaysDifferences / numberOfIterations;        // Odchylenie standardowe z próby przed pierwiastkiem
             deviation = Math.Sqrt(y);                                   // Odchylenie standardowe z próby
 
             confidence = (u * deviation) / Math.Sqrt(numberOfIterations);
@@ -198,23 +198,23 @@ namespace OAST_MM1.Queues
         {
             delaysList.Sort();
 
-            var numberOfValues = delaysList.Count;
-            var maxValue = delaysList[numberOfValues - 1];
-            var minValue = delaysList[0];
+            int numberOfValues = delaysList.Count;
+            double maxValue = delaysList[numberOfValues - 1];
+            double minValue = delaysList[0];
 
-            var difference = maxValue - minValue;
-            var step = difference / 20;
+            double difference = maxValue - minValue;
+            double step = difference / 20;
 
-            var currentValue = minValue + step;
-            var previousValue = minValue;
+            double currentValue = minValue + step;
+            double previousValue = minValue;
 
             // ilość argumentów x na wykresie to 20, bo tak sobie przyjąłęm
-            var numberOfValuesPerIteration = numberOfValues / 20;
+            int numberOfValuesPerIteration = numberOfValues / 20;
 
             for (int i = 0; i < 20; i++)
             {
-                var range = delaysList.Where(x => x <= currentValue && x >= minValue).ToList();
-                var sum = range.Count;
+                List<double> range = delaysList.Where(x => x <= currentValue && x >= minValue).ToList();
+                int sum = range.Count;
 
                 delayValues += $"{currentValue}\t{sum}\n";
 
@@ -225,8 +225,8 @@ namespace OAST_MM1.Queues
 
         private void WriteToFile(double minDelay, double maxDelay, double ET, int numberOfIterations)
         {
-            var path = $"Wyniki.txt";
-            var path2 = $"Delays.txt";
+            string path = $"Wyniki.txt";
+            string path2 = $"Delays.txt";
             if (!File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path))
