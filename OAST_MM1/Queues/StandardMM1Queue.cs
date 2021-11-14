@@ -1,7 +1,6 @@
 ﻿using OAST_MM1.Objects;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -15,9 +14,11 @@ namespace OAST_MM1.Queues
         private double simulationTime = 0;
         private double maxSimulationTime = 50000;
         private double totalServiceTime = 0;
+        private double totalIdleTime = 0;
         private int numberOfServedIncidents = 0;
-        private string path = $"Wyniki2.txt";
-        private string path2 = $"Delays.txt";
+        private string path = "./Wyniki/Wyniki.txt";
+        private string pathExcel = "./Wyniki/Wyniki_Excel.txt";
+        private string pathDelays = "./Wyniki/Delays.txt";
 
         private Random random = new Random();
         private IncidentsList incidentsList = new IncidentsList();
@@ -72,8 +73,10 @@ namespace OAST_MM1.Queues
 
             for (int i = 0; i < numberOfIterations; i++)
             {
-                step = ProgressBar(numberOfIterations, completed, i, step);
+                if (completed != 0)
+                    step = ProgressBar(numberOfIterations, completed, i, step);
                 totalServiceTime = 0;
+                totalIdleTime = 0;
                 simulationTime = 0;
                 numberOfServedIncidents = 0;
                 incidentsList = new IncidentsList();
@@ -132,18 +135,21 @@ namespace OAST_MM1.Queues
                     }
                     else
                     {
+                        if (simulationTime >= 120)                                  // Rozpęd 120 sekund
+                        {
+                            totalIdleTime += incidentsList.Incidents[0].arrivalTime - simulationTime;  // czas idle to czas gdy system czeka na pakiet
+                        }
                         simulationTime = incidentsList.Incidents[0].arrivalTime;    // aktualny czas symulacji
                     }
                 }
-                calculatedDelay = totalServiceTime / numberOfServedIncidents;
-                double totalIdleTime = maxSimulationTime - totalServiceTime;
-                allCalculatedDelays += calculatedDelay;                            // dodajemy do zmiennej obliczone opóźnienie
+                allCalculatedDelays += totalServiceTime / numberOfServedIncidents; // dodajemy do zmiennej obliczone opóźnienie z tej próby
+                allCalculatedIdleMoments += totalIdleTime / numberOfServedIncidents;    // średni czas idle na pakiet
                 allServedIncidents += numberOfServedIncidents;
-                allCalculatedIdleMoments += totalIdleTime;
 
-                delaysList.Add(calculatedDelay);             // Lista z opóźnieniami do liczenia przedziałów ufności
+                delaysList.Add(totalServiceTime / numberOfServedIncidents);             // Lista z opóźnieniami do liczenia przedziałów ufności
             }
-            ProgressBar(numberOfIterations, completed, numberOfIterations, step);
+            if (completed != 0)
+                ProgressBar(numberOfIterations, completed, numberOfIterations, step);
 
             estimatedDelay = allCalculatedDelays / numberOfIterations;          // Wyestymowane opóźnienie na podstawie ilości iteracji
             allServedIncidents = allServedIncidents / numberOfIterations;   // Ile średnio było obsłużonych pakietów
@@ -161,7 +167,7 @@ namespace OAST_MM1.Queues
             if (i == 0)
             {
                 Console.Clear();
-                Console.WriteLine($"Lambda: {LAMBDA}, Number of iterations: {numberOfIterations}, Czas symulacji: {maxSimulationTime}");
+                Console.WriteLine($"Lambda: {LAMBDA} MI: {MI} Number of iterations: {numberOfIterations} Czas symulacji: {maxSimulationTime}");
                 Console.Write("Progress: [");
                 for (int a = 0; a < 40; a++)
                 {
@@ -172,7 +178,7 @@ namespace OAST_MM1.Queues
             if (i == x)
             {
                 Console.SetCursorPosition(0, 0);
-                Console.WriteLine($"Lambda: {LAMBDA}, Number of iterations: {numberOfIterations}, Czas symulacji: {maxSimulationTime}");
+                Console.WriteLine($"Lambda: {LAMBDA} MI: {MI} Number of iterations: {numberOfIterations} Czas symulacji: {maxSimulationTime}");
                 Console.Write("Progress: [");
                 for (int a = 0; a < progressBar; a++)
                 {
@@ -183,7 +189,7 @@ namespace OAST_MM1.Queues
                     Console.Write(" ");
                 }
                 double percentage = (double)progressBar / 40;
-                Console.Write($"] {Math.Truncate(percentage*100)}%\n");
+                Console.Write($"] {Math.Truncate(percentage * 100)}%\n");
                 x += completed;
             }
             return x;
@@ -198,7 +204,7 @@ namespace OAST_MM1.Queues
 
             foreach (var delay in delaysList)
             {
-                double x = Math.Pow(delay - averageDelay,2);
+                double x = Math.Pow(delay - averageDelay, 2);
                 sumOfDelaysDifferences += x;
             }
 
@@ -240,37 +246,25 @@ namespace OAST_MM1.Queues
 
         private void WriteToFile(double minDelay, double maxDelay, double ET, int numberOfIterations, double estimatedIdle)
         {
-            if (!File.Exists(path))
+            using (StreamWriter sw = (File.Exists(path)) ? File.AppendText(path) : File.CreateText(path))
             {
-                using (StreamWriter sw = File.CreateText(path))
-                {
-                    sw.WriteLine($"Mi: {MI} || Lambda: {LAMBDA} || Simulation Time: {maxSimulationTime} || Number of iterations: {numberOfIterations}");
-                    sw.WriteLine($"Theoritical delay: {ET}");
-                    sw.WriteLine($"Estimated delay: {estimatedDelay}");
-                    sw.WriteLine($"Confidence: +/-{confidence}");
-                    sw.WriteLine($"Deviation: {deviation}");
-                    sw.WriteLine($"Max delay: {maxDelay}");
-                    sw.WriteLine($"Min delay: {minDelay}");
-                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}");
-                    sw.WriteLine($"Estimated IdleTime: {estimatedIdle}\n");
-                }
+                sw.WriteLine($"Mi: {MI} || Lambda: {LAMBDA} || Simulation Time: {maxSimulationTime} || Number of iterations: {numberOfIterations}");
+                sw.WriteLine($"Theoritical delay: {ET}");
+                sw.WriteLine($"Estimated delay: {estimatedDelay}");
+                sw.WriteLine($"Confidence: +/-{confidence}");
+                sw.WriteLine($"Deviation: {deviation}");
+                sw.WriteLine($"Max delay: {maxDelay}");
+                sw.WriteLine($"Min delay: {minDelay}");
+                sw.WriteLine($"Estimated number of packets served: {allServedIncidents}");
+                sw.WriteLine($"Estimated IdleTime: {estimatedIdle}\n");
             }
-            else
+
+            using (StreamWriter sw = (File.Exists(pathExcel)) ? File.AppendText(pathExcel) : File.CreateText(pathExcel))
             {
-                using (StreamWriter sw = File.AppendText(path))
-                {
-                    sw.WriteLine($"Mi: {MI} || Lambda: {LAMBDA} || Simulation Time: {maxSimulationTime} || Number of iterations: {numberOfIterations}");
-                    sw.WriteLine($"Theoritical delay: {ET}");
-                    sw.WriteLine($"Estimated delay: {estimatedDelay}");
-                    sw.WriteLine($"Confidence: +/-{confidence}");
-                    sw.WriteLine($"Deviation: {deviation}");
-                    sw.WriteLine($"Max delay: {maxDelay}");
-                    sw.WriteLine($"Min delay: {minDelay}");
-                    sw.WriteLine($"Estimated number of packets served: {allServedIncidents}");
-                    sw.WriteLine($"Estimated IdleTime: {estimatedIdle}\n");
-                }
+                sw.WriteLine($"{MI}\t{LAMBDA}\t{estimatedIdle}");
             }
-            using (StreamWriter sw = File.CreateText(path2))
+
+            using (StreamWriter sw = File.CreateText(pathDelays))
             {
                 sw.WriteLine($"{delayValues}");
             }
