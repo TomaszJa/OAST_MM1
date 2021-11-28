@@ -16,6 +16,7 @@ namespace OAST_MM1.Queues
         private double totalServiceTime = 0;
         private double totalIdleTime = 0;
         private int numberOfServedIncidents = 0;
+        private int numberOfIdleMoments = 0;
         private string path = "./Wyniki/Wyniki.txt";
         private string pathExcel = "./Wyniki/Wyniki_Excel.txt";
         private string pathDelays = "./Wyniki/Delays.txt";
@@ -27,6 +28,7 @@ namespace OAST_MM1.Queues
 
         public double estimatedDelay;
         public int allServedIncidents;
+        public int allIdleMoments;
         public double maxDelay;
         public double minDelay;
         public double confidence;
@@ -63,7 +65,6 @@ namespace OAST_MM1.Queues
         public void StartSimulation(int numberOfIterations)
         {
             double allCalculatedDelays = 0.0;
-            double calculatedDelay = 0.0;
             double minDelay = Double.MaxValue;
             double maxDelay = Double.MinValue;
             double allCalculatedIdleMoments = 0.0;
@@ -79,6 +80,7 @@ namespace OAST_MM1.Queues
                 totalIdleTime = 0;
                 simulationTime = 0;
                 numberOfServedIncidents = 0;
+                numberOfIdleMoments = 0;
                 incidentsList = new IncidentsList();
                 timesOfServiceList = new List<double>();
                 timeBetweenIncidents = 0;
@@ -104,20 +106,8 @@ namespace OAST_MM1.Queues
 
                         if (simulationTime >= 120)                                  // Rozpęd 120 sekund
                         {
-                            double serviceTime = simulationTime - incidentToServe.arrivalTime;
-                            totalServiceTime += serviceTime;                        // całkowity czas obsługi zdarzeń
-                            numberOfServedIncidents++;
-
-                            timesOfServiceList.Add(serviceTime);      // Dodaj aktualny czas do listy czasów
-
-                            if (minDelay > serviceTime)
-                            {
-                                minDelay = serviceTime;
-                            }
-                            if (maxDelay < serviceTime)
-                            {
-                                maxDelay = serviceTime;
-                            }
+                            //PacketServiceOAST(ref minDelay, ref maxDelay, incidentToServe);
+                            PacketServiceMPI(ref minDelay, ref maxDelay, incidentToServe);
                         }
 
                         // Czas przyjścia następnego pakietu to czas przyjścia poprzedniego + losowy czas nextTime (po jakim czasie przyjdzie następny)
@@ -138,6 +128,7 @@ namespace OAST_MM1.Queues
                         if (simulationTime >= 120)                                  // Rozpęd 120 sekund
                         {
                             totalIdleTime += incidentsList.Incidents[0].arrivalTime - simulationTime;  // czas idle to czas gdy system czeka na pakiet
+                            numberOfIdleMoments++;
                         }
                         simulationTime = incidentsList.Incidents[0].arrivalTime;    // aktualny czas symulacji
                     }
@@ -145,6 +136,7 @@ namespace OAST_MM1.Queues
                 allCalculatedDelays += totalServiceTime / numberOfServedIncidents; // dodajemy do zmiennej obliczone opóźnienie z tej próby
                 allCalculatedIdleMoments += totalIdleTime / numberOfServedIncidents;    // średni czas idle na pakiet
                 allServedIncidents += numberOfServedIncidents;
+                allIdleMoments += numberOfIdleMoments;
 
                 delaysList.Add(totalServiceTime / numberOfServedIncidents);             // Lista z opóźnieniami do liczenia przedziałów ufności
             }
@@ -153,12 +145,49 @@ namespace OAST_MM1.Queues
 
             estimatedDelay = allCalculatedDelays / numberOfIterations;          // Wyestymowane opóźnienie na podstawie ilości iteracji
             allServedIncidents = allServedIncidents / numberOfIterations;   // Ile średnio było obsłużonych pakietów
+            allIdleMoments = allIdleMoments / numberOfIterations;
             double ET = 1 / (MI - LAMBDA);                                     // Obliczone teoretyczne opóźnienie
             double estimatedIdle = allCalculatedIdleMoments / numberOfIterations;
 
             ConfidenceInterval(estimatedDelay, numberOfIterations);
             NormalDistribution();
             WriteToFile(minDelay, maxDelay, ET, numberOfIterations, estimatedIdle);
+        }
+
+        private void PacketServiceOAST(ref double minDelay, ref double maxDelay, Incident incidentToServe)
+        {
+            double serviceTime = simulationTime - incidentToServe.arrivalTime;
+            totalServiceTime += serviceTime;                        // całkowity czas obsługi zdarzeń
+            numberOfServedIncidents++;
+
+            timesOfServiceList.Add(serviceTime);      // Dodaj aktualny czas do listy czasów
+
+            if (minDelay > serviceTime)
+            {
+                minDelay = serviceTime;
+            }
+            if (maxDelay < serviceTime)
+            {
+                maxDelay = serviceTime;
+            }
+        }
+
+        private void PacketServiceMPI(ref double minDelay, ref double maxDelay, Incident incidentToServe)
+        {
+            double serviceTime = incidentToServe.serviceTime;
+            totalServiceTime += serviceTime;                        // całkowity czas obsługi zdarzeń
+            numberOfServedIncidents++;
+
+            timesOfServiceList.Add(serviceTime);      // Dodaj aktualny czas do listy czasów
+
+            if (minDelay > serviceTime)
+            {
+                minDelay = serviceTime;
+            }
+            if (maxDelay < serviceTime)
+            {
+                maxDelay = serviceTime;
+            }
         }
 
         private int ProgressBar(int numberOfIterations, int completed, int i, int x)
@@ -256,12 +285,13 @@ namespace OAST_MM1.Queues
                 sw.WriteLine($"Max delay: {maxDelay}");
                 sw.WriteLine($"Min delay: {minDelay}");
                 sw.WriteLine($"Estimated number of packets served: {allServedIncidents}");
+                sw.WriteLine($"Estimated number of idle moments: {allIdleMoments}");
                 sw.WriteLine($"Estimated IdleTime: {estimatedIdle}\n");
             }
 
             using (StreamWriter sw = (File.Exists(pathExcel)) ? File.AppendText(pathExcel) : File.CreateText(pathExcel))
             {
-                sw.WriteLine($"{MI}\t{LAMBDA}\t{estimatedIdle}");
+                sw.WriteLine($"{MI}\t{LAMBDA}\t{estimatedIdle}\t{estimatedDelay}\t{allIdleMoments}\t{allServedIncidents}\t{LAMBDA/MI}\t{1 - LAMBDA/MI}");
             }
 
             using (StreamWriter sw = File.CreateText(pathDelays))

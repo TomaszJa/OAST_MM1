@@ -78,19 +78,25 @@ namespace OAST_MM1
 
         private static void PrepareFiles()
         {
-            using (StreamWriter sw = File.CreateText("./Wyniki/Wyniki.txt"))
+            try
             {
-                ;
-            }
+                if (!Directory.Exists("./Wyniki"))
+                {
+                    Directory.CreateDirectory("./Wyniki");
+                }
+                using (StreamWriter sw = File.CreateText("./Wyniki/Wyniki.txt"))
+                {
+                    ;
+                }
 
-            using (StreamWriter sw = File.CreateText("./Wyniki/Wyniki_Excel.txt"))
-            {
-                ;
-            }
+                using (StreamWriter sw = File.CreateText("./Wyniki/Wyniki_Excel.txt"))
+                {
+                    sw.WriteLine("MI\tLAMBDA\tEstimated Idle Time\tEstimated Service Time\tNumber of Idle Moments\tNumber of Served Incidents\tro\t1-ro");
+                }
 
-            if (!Directory.Exists("./Wyniki"))
+            }catch (Exception ex)
             {
-                Directory.CreateDirectory("./Wyniki");
+                Console.WriteLine(ex.Message);
             }
         }
     }
